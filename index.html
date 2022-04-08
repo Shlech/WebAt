@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>Photozone A</title>
+
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://libs.zappar.com/zappar-aframe/0.3.29/zappar-aframe.js"></script>
+</head>
+
+<body>
+<!— Управление по нажатию на элементы в доп реальности-->
+<a-scene cursor="rayOrigin: mouse" raycaster="objects: [data-clickable]">
+    <!— Загружаем ассеты —>
+    <a-assets>
+        <!— Китайская шляпа (3D) —>
+        <a-asset-item id="hatModel" src="https://cdn.glitch.global/2c27ad14-c823-4d6e-9352-eaa40b3779da/hat.glb?v=1643119461471"></a-asset-item>
+        <!— Шапка-ушанка(3D) —>
+        <a-asset-item id="ushankaModel" src ="https://cdn.glitch.global/2c27ad14-c823-4d6e-9352-eaa40b3779da/2glbtstsuyuyutsyu.glb?v=1643174133226"></a-asset-item>
+        <a-asset-item id="gruzinModel" src ="https://cdn.glitch.global/2c27ad14-c823-4d6e-9352-eaa40b3779da/897676767.glb?v=1643174201890"></a-asset-item>
+        <!--Кнопки управления: вперед и назад-->
+        <img
+                id="next"
+                src="https://cdn.glitch.global/2c27ad14-c823-4d6e-9352-eaa40b3779da/2.png?v=1643174838889"
+        />
+        <img
+                id="prev"
+                src="https://cdn.glitch.global/2c27ad14-c823-4d6e-9352-eaa40b3779da/1.png?v=1643174811404"
+        />
+    </a-assets>
+
+    <!— Получение разрешения на использование камеры и вывод сообщения-->
+    <a-entity zappar-permissions-ui id="permissions">
+        <a-entity
+                text="value: Please reload the page, accepting the camera permissions."
+                position="0 0 -2"
+        >
+        </a-entity>
+    </a-entity>
+
+    <!--Подключение камеры с возможностью распознавания лиц-->
+    <a-camera zappar-camera="user-facing: true;"> </a-camera>
+
+    <!— Трекинг лица: при наложении на лицо отображаются элементы находящиеся внутри контейнера с компонентом ZAPPAR-FACE —>
+    <a-entity zappar-face id="my-face-tracker">
+
+        <!— Include a head mask object that will make sure the user's head appears in the center of our helmet —>
+        <a-entity zappar-head-mask="face:#my-face-tracker;"></a-entity>
+
+        <!— Include a 3D model inside our face tracker —>
+        <a-entity gltf-model="#hatModel"
+                  position="0.05 0.85 0"
+                  scale="1.3 1.3 1.3"
+                  rotation="0 90 0"
+                  visible ="true"
+                  id ="facemesh0"
+        ></a-entity>
+        <a-entity gltf-model="#ushankaModel"
+                  position="0 0.7 1"
+                  scale="1.6 1.6 1.6"
+                  rotation="0 -90 0"
+                  visible ="false"
+                  id ="facemesh1"
+        ></a-entity>
+        <a-entity gltf-model="#gruzinModel"
+                  position="-0.05 0.75 0.3"
+                  scale="0.75 0.75 0.75"
+                  rotation="0 0 0"
+                  visible ="false"
+                  id ="facemesh2"
+        ></a-entity>
+        <!--Отображение управляющих элементов: вперед и назад-->
+        <a-entity
+                geometry="primitive: plane"
+                material="src: #next; transparent: true;"
+                position="0.5 -1.5 0"
+                scale="0.5 0.5 0.5"
+                data-clickable
+                onclick="OnNextClick()"
+        ></a-entity>
+
+        <a-entity
+                geometry="primitive: plane"
+                material="src: #prev; transparent: true;"
+                position="-0.5 -1.5 0"
+                scale="0.5 0.5 0.5"
+                data-clickable
+                onclick="OnPrevClick()"
+        ></a-entity>
+    </a-entity>
+</a-scene>
+
+<!— Переключение кода —>
+<script>
+    var curr = 0; // текущая маска
+    var maskAmount = 3; // количество масок
+    var d = document; //сокращение для удобства работы
+    // Интерфейс документа представляет любую веб-страницу,
+    // загруженную в браузер, и служит точкой входа
+    // в содержимое веб-страницы, которое является деревом DOM.
+
+    // Пролистывание вперед
+    function OnNextClick() {
+        if (curr < maskAmount - 1) {
+            curr++; //curr = curr + 1
+            d.getElementById("facemesh" + curr).setAttribute("visible", true);
+            d.getElementById("facemesh" + (curr - 1)).setAttribute(
+                "visible",
+                false
+            );
+        }
+    }
+
+    // Пролистывание назад
+    function OnPrevClick() {
+        if (curr > 0) {
+            curr--;//curr = curr - 1
+            d.getElementById("facemesh" + curr).setAttribute("visible", true);
+            d.getElementById("facemesh" + (curr + 1)).setAttribute(
+                "visible",
+                false
+            );
+        }
+    }
+</script>
+</body>
+</html>
